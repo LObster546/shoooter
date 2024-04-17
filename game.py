@@ -25,17 +25,22 @@ class GameSprite(sprite.Sprite):
 class PLayer(GameSprite):
     def update(self):
         keys_pressed = key.get_pressed()
+        
+
         if keys_pressed[K_a]:
-           
-            self.rect.x -= self.speed
+            if not (sprite.collide_rect(s_hero, wallw3) or sprite.collide_rect(s_hero, wallw3_2) or sprite.collide_rect(s_hero, l1wall1) or sprite.collide_rect(s_hero, l1wall2) or sprite.collide_rect(s_hero, l2wall1) or sprite.collide_rect(s_hero, l3wall1)):
+                self.rect.x -= self.speed
         if keys_pressed[K_d]:
-            self.rect.x += self.speed
+            if not sprite.collide_rect(s_hero, wallw4):
+                self.rect.x += self.speed
             
         if keys_pressed[K_s]:
-            self.rect.y += self.speed
-      
+            if not sprite.collide_rect(s_hero, wallw2):
+                self.rect.y += self.speed
+    
         if keys_pressed[K_w]:
-            self.rect.y -= self.speed
+            if not sprite.collide_rect(s_hero, wallw1):
+                self.rect.y -= self.speed
  
 
 
@@ -93,30 +98,33 @@ class Door(sprite.Sprite):
 #фон
 window = display.set_mode((1000, 700))
 display.set_caption('Шутер')
-background1 = transform.scale(image.load('loc0.png'), (1000, 700))
+background1 = transform.scale(image.load('loc0test.png'), (1000, 700))
 
-background2 = transform.scale(image.load('loc1.png'), (1000, 700))
+background2 = transform.scale(image.load('loc1test.jpg'), (1000, 700))
 
-background3 = transform.scale(image.load('loc1.png'), (1000, 700))
+background3 = transform.scale(image.load('loc1test.jpg'), (1000, 700))
 
 #спрайты
-s_hero = PLayer('player.png', 300, 350, 800, 300, 7)
+s_hero = PLayer('player.png', 100, 100, 800, 300, 7)
 
 bullets = sprite.Group()
 #гл стены 
-wallw1 = Wall(255, 0, 0, -3, 0, 1500, 1)
-wallw2 = Wall(255, 0, 0, 705, 0, 1500, 1)
-wallw3 = Wall(255, 0, 0, 0, -10, 5, 300)
+wallw1 = Wall(255, 0, 0, -3, 0, 1500, 1) #верхняя сена мира
+wallw2 = Wall(255, 0, 0, -3, 703, 1500, 1) #нижняя стена мира
+wallw3 = Wall(255, 0, 0, 0, -10, 5, 300) 
 wallw3_2 = Wall(255, 0, 0, 0, 500, 5, 300)
-wallw4 = Wall(255, 0, 0, -3, 1001, 1, 750)
+wallw4 = Wall(255, 0, 0, 1001, 0, 1, 750) #правая сnена мира
 
 #стены 1 локации
 l1wall1 = Wall(255, 0, 0, 430, -10, 10, 300)
 l1wall2 = Wall(255, 0, 0, 430, 550, 10, 300)
 #стены 2 локации
-l2wall1 = Wall(255, 0, 0, 700, 500, 300, 10)
+l2wall1 = Wall(255, 0, 0, 800, 300, 10, 500)
+l2wall2 = Wall(255, 0, 0, 1, 270, 500, 10)
 
 #стены 3 локации\
+l3wall1 = Wall(255, 0, 0, 0, 250, 5, 300)
+l3wall2 = Wall(255, 0, 0, 500, 400, 10, 500)
 
 
 
@@ -174,16 +182,22 @@ while game:
             window.blit(background2, (0, 0))
 
             l2wall1.draw_wall()
+            l2wall2.draw_wall()
 
         if room == 2:
             window.blit(background3, (0, 0))
 
+            l3wall1.draw_wall()
+            l3wall2.draw_wall()
+
+        
 
         #
         s_hero.update()
         s_hero.reset()
         wallw3.draw_wall()
         wallw3_2.draw_wall()
+
 
 
 
@@ -224,3 +238,4 @@ while game:
 
     display.update()
     clock.tick(FPS)
+
