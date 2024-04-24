@@ -28,14 +28,14 @@ class PLayer(GameSprite):
         
 
         if keys_pressed[K_a]:
-            if not (sprite.collide_rect(s_hero, wallw3) or sprite.collide_rect(s_hero, wallw3_2) or sprite.collide_rect(s_hero, l1wall1) or sprite.collide_rect(s_hero, l1wall2) or sprite.collide_rect(s_hero, l2wall1) or sprite.collide_rect(s_hero, l3wall1)):
+            if not (sprite.collide_rect(s_hero, wallw3) or sprite.collide_rect(s_hero, wallw3_2) or sprite.collide_rect(s_hero, l1wall1) or sprite.collide_rect(s_hero, l1wall2) or sprite.collide_rect(s_hero, l2wall1) or sprite.collide_rect(s_hero, l3wall1) or sprite.collide_rect(s_hero, l3wall2) or sprite.collide_rect(s_hero, l2wall2)):
                 self.rect.x -= self.speed
         if keys_pressed[K_d]:
-            if not sprite.collide_rect(s_hero, wallw4):
+            if not (sprite.collide_rect(s_hero, wallw4) or sprite.collide_rect(s_hero, l1wall1) or sprite.collide_rect(s_hero, l1wall2) or sprite.collide_rect(s_hero, l2wall1) or sprite.collide_rect(s_hero, l3wall1) or sprite.collide_rect(s_hero, l3wall2)) :
                 self.rect.x += self.speed
             
         if keys_pressed[K_s]:
-            if not sprite.collide_rect(s_hero, wallw2):
+            if not (sprite.collide_rect(s_hero, wallw2) or sprite.collide_rect(s_hero, l2wall2)):
                 self.rect.y += self.speed
     
         if keys_pressed[K_w]:
@@ -49,13 +49,32 @@ class PLayer(GameSprite):
         bullets.add(bullet)
 
     def enemyfire():
+
+
+
         pass
 
 class MeleeEnemy(GameSprite):
+    direction = 'left'
+    def update(self):
+        if sprite.collide_rect(s_menemy, wallw3):
+            self.direction = 'right'
+        if self.rect.x >= 650:
+            self.direction = 'left'
+        
+        if self.direction == 'left':
+            self.rect.x -= self.speed
+        if self.direction == 'right':
+            self.rect.x += self.speed
+
+
+
     pass
 class Bullet(GameSprite):
     def update(self):
         self.rect.x -= self.speed
+        sprite.groupcollide(bullets, walls, True, False)
+
         if self.rect.x < -2:
             self.kill()
 class Wall(sprite.Sprite):
@@ -88,6 +107,9 @@ class Door(sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+
+
+
     def draw_door(self):
         window.blit(self.image, (self.rect.x, self.rect.y))
 
@@ -98,16 +120,21 @@ class Door(sprite.Sprite):
 #фон
 window = display.set_mode((1000, 700))
 display.set_caption('Шутер')
-background1 = transform.scale(image.load('loc0test.png'), (1000, 700))
+background1 = transform.scale(image.load('loc0.png'), (1000, 700))
 
-background2 = transform.scale(image.load('loc1test.jpg'), (1000, 700))
+background2 = transform.scale(image.load('loc1.png'), (1000, 700))
 
-background3 = transform.scale(image.load('loc1test.jpg'), (1000, 700))
+background3 = transform.scale(image.load('loc1.png'), (1000, 700))
 
 #спрайты
 s_hero = PLayer('player.png', 100, 100, 800, 300, 7)
 
+s_menemy = MeleeEnemy('enemy2.png', 100, 100, 50, 100, 4)
+
 bullets = sprite.Group()
+
+
+
 #гл стены 
 wallw1 = Wall(255, 0, 0, -3, 0, 1500, 1) #верхняя сена мира
 wallw2 = Wall(255, 0, 0, -3, 703, 1500, 1) #нижняя стена мира
@@ -116,15 +143,36 @@ wallw3_2 = Wall(255, 0, 0, 0, 500, 5, 300)
 wallw4 = Wall(255, 0, 0, 1001, 0, 1, 750) #правая сnена мира
 
 #стены 1 локации
-l1wall1 = Wall(255, 0, 0, 430, -10, 10, 300)
+'''корды стен'''
+l1w1_x = 430
+l1w1_y = -10
+l1w2_x = 430
+l1w2_y = 550
+
+l1wall1 = Wall(255, 0, 0, l1w1_x, l1w1_y, 10, 300)
 l1wall2 = Wall(255, 0, 0, 430, 550, 10, 300)
 #стены 2 локации
-l2wall1 = Wall(255, 0, 0, 800, 300, 10, 500)
-l2wall2 = Wall(255, 0, 0, 1, 270, 500, 10)
+l2w1_x = 10000
+l2w1_y = 10000
+
+l2w2_x = 10000
+l2w2_y = 10000
+#800 300
+#1 270
+l2wall1 = Wall(255, 0, 0, l2w1_x, l2w1_y, 10, 500)
+l2wall2 = Wall(255, 0, 0, l2w2_x, l2w2_y, 500, 10)
 
 #стены 3 локации\
-l3wall1 = Wall(255, 0, 0, 0, 250, 5, 300)
-l3wall2 = Wall(255, 0, 0, 500, 400, 10, 500)
+l3w1_x = 10000
+l3w1_y = 10000
+
+l3w2_x = 10000
+l3w2_y = 10000
+
+#0 250
+#500 400
+l3wall1 = Wall(0, 255, 0, l3w1_x, l3w1_y, 5, 300)
+l3wall2 = Wall(255, 0, 0, l3w2_x, l3w2_y, 10, 500)
 
 
 
@@ -149,6 +197,9 @@ mixer.init()
 
 clock = time.Clock()
 FPS = 50
+
+walls = sprite.Group(wallw1, wallw2, wallw3, wallw3_2, wallw4, l1wall1, l1wall2, l2wall1, l2wall2, l3wall1, l3wall2)
+walls.add()
 
 font.init()
 font = font.Font(None, 70)
@@ -179,6 +230,18 @@ while game:
 
 
         if room == 1:
+            l1wall1.rect.x = 10000
+            l1wall1.rect.y = 10000
+            l1wall2.rect.x = 10000
+            l1wall2.rect.y = 10000
+
+
+
+            l2wall1.rect.x = 800
+            l2wall1.rect.y = 300
+
+            l2wall2.rect.x = 1
+            l2wall2.rect.y = 270
             window.blit(background2, (0, 0))
 
             l2wall1.draw_wall()
@@ -186,15 +249,31 @@ while game:
 
         if room == 2:
             window.blit(background3, (0, 0))
+            l2wall1.rect.x = 10000
+            l2wall1.rect.y = 10000
+            l2wall2.rect.x = 10000
+            l2wall2.rect.y = 10000
+
+            l3wall1.rect.x = 0
+            l3wall1.rect.y = 250
+
+            l3wall2.rect.x = 500
+            l3wall2.rect.y = 400
 
             l3wall1.draw_wall()
             l3wall2.draw_wall()
+
 
         
 
         #
         s_hero.update()
         s_hero.reset()
+
+        s_menemy.update()
+        s_menemy.reset()
+
+
         wallw3.draw_wall()
         wallw3_2.draw_wall()
 
@@ -203,8 +282,14 @@ while game:
 
 
 
+
+
+
+
+
         bullets.update()
         bullets.draw(window)
+
 
 
 
