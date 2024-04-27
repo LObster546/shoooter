@@ -1,3 +1,4 @@
+
 from typing import Any
 from pygame import*
 from random import *
@@ -31,7 +32,7 @@ class PLayer(GameSprite):
             if not (sprite.collide_rect(s_hero, wallw3) or sprite.collide_rect(s_hero, wallw3_2) or sprite.collide_rect(s_hero, l1wall1) or sprite.collide_rect(s_hero, l1wall2) or sprite.collide_rect(s_hero, l2wall1) or sprite.collide_rect(s_hero, l3wall1) or sprite.collide_rect(s_hero, l3wall2) or sprite.collide_rect(s_hero, l2wall2)):
                 self.rect.x -= self.speed
         if keys_pressed[K_d]:
-            if not (sprite.collide_rect(s_hero, wallw4) or sprite.collide_rect(s_hero, l1wall1) or sprite.collide_rect(s_hero, l1wall2) or sprite.collide_rect(s_hero, l2wall1) or sprite.collide_rect(s_hero, l3wall1) or sprite.collide_rect(s_hero, l3wall2)) :
+            if not (sprite.collide_rect(s_hero, wallw4) or sprite.collide_rect(s_hero, l1wall1) or sprite.collide_rect(s_hero, l1wall2) or sprite.collide_rect(s_hero, l2wall1) or sprite.collide_rect(s_hero, l3wall2)) :
                 self.rect.x += self.speed
             
         if keys_pressed[K_s]:
@@ -54,12 +55,12 @@ class PLayer(GameSprite):
 
         pass
 
-class MeleeEnemy(GameSprite):
+class MeleeEnemy_lr(GameSprite):
     direction = 'left'
     def update(self):
         if sprite.collide_rect(s_menemy, wallw3):
             self.direction = 'right'
-        if self.rect.x >= 650:
+        if sprite.collide_rect(s_menemy, l1wall1):
             self.direction = 'left'
         
         if self.direction == 'left':
@@ -69,7 +70,7 @@ class MeleeEnemy(GameSprite):
 
 
 
-    pass
+
 class Bullet(GameSprite):
     def update(self):
         self.rect.x -= self.speed
@@ -93,6 +94,8 @@ class Wall(sprite.Sprite):
         self.rect.y = y
     def draw_wall(self):
         window.blit(self.image, (self.rect.x, self.rect.y))
+
+
 class Door(sprite.Sprite):
     def __init__(self, r, g, b, x, y, w, h):
         super().__init__()
@@ -129,18 +132,18 @@ background3 = transform.scale(image.load('loc1.png'), (1000, 700))
 #спрайты
 s_hero = PLayer('player.png', 100, 100, 800, 300, 7)
 
-s_menemy = MeleeEnemy('enemy2.png', 100, 100, 50, 100, 4)
+s_menemy = MeleeEnemy_lr('enemy2.png', 100, 100, 50, 100, 4)
 
 bullets = sprite.Group()
 
 
 
 #гл стены 
-wallw1 = Wall(255, 0, 0, -3, 0, 1500, 1) #верхняя сена мира
-wallw2 = Wall(255, 0, 0, -3, 703, 1500, 1) #нижняя стена мира
-wallw3 = Wall(255, 0, 0, 0, -10, 5, 300) 
-wallw3_2 = Wall(255, 0, 0, 0, 500, 5, 300)
-wallw4 = Wall(255, 0, 0, 1001, 0, 1, 750) #правая сnена мира
+wallw1 = Wall(60, 60, 60, -3, 0, 1500, 1) #верхняя сена мира
+wallw2 = Wall(60, 60, 60, -3, 703, 1500, 1) #нижняя стена мира
+wallw3 = Wall(60, 60, 60, 0, -10, 10, 300) 
+wallw3_2 = Wall(60, 60, 60, 0, 500, 10, 300)
+wallw4 = Wall(60, 0, 0, 1001, 0, 1, 750) #правая сnена мира
 
 #стены 1 локации
 '''корды стен'''
@@ -149,8 +152,8 @@ l1w1_y = -10
 l1w2_x = 430
 l1w2_y = 550
 
-l1wall1 = Wall(255, 0, 0, l1w1_x, l1w1_y, 10, 300)
-l1wall2 = Wall(255, 0, 0, 430, 550, 10, 300)
+l1wall1 = Wall(60, 60, 60, l1w1_x, l1w1_y, 20, 300)
+l1wall2 = Wall(60, 60, 60, 430, 550, 20, 300)
 #стены 2 локации
 l2w1_x = 10000
 l2w1_y = 10000
@@ -159,8 +162,8 @@ l2w2_x = 10000
 l2w2_y = 10000
 #800 300
 #1 270
-l2wall1 = Wall(255, 0, 0, l2w1_x, l2w1_y, 10, 500)
-l2wall2 = Wall(255, 0, 0, l2w2_x, l2w2_y, 500, 10)
+l2wall1 = Wall(60, 60, 60, l2w1_x, l2w1_y, 10, 500)
+l2wall2 = Wall(60, 60, 60, l2w2_x, l2w2_y, 500, 10)
 
 #стены 3 локации\
 l3w1_x = 10000
@@ -172,7 +175,7 @@ l3w2_y = 10000
 #0 250
 #500 400
 l3wall1 = Wall(0, 255, 0, l3w1_x, l3w1_y, 5, 300)
-l3wall2 = Wall(255, 0, 0, l3w2_x, l3w2_y, 10, 500)
+l3wall2 = Wall(60, 60, 60, l3w2_x, l3w2_y, 10, 500)
 
 
 
