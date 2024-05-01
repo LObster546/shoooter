@@ -9,8 +9,8 @@ import math
 #будет примерно 3 локации через которые можно будет почти  свободно передвигаться
 #Управление: w a s d - хотьба,  ЛКМ - стрельба
 #У игрока только 1 жизнь, по пути будут встречаться: двигующиеся враги, стреляющие, стоящие(наверное)
-
 room = 0
+
 
 class GameSprite(sprite.Sprite):
     def __init__(self, player_image, player_w, player_h, player_x, player_y, player_speed):
@@ -55,18 +55,18 @@ class PLayer(GameSprite):
 
         pass
 
-class MeleeEnemy_lr(GameSprite):
-    direction = 'left'
+class MeleeEnemy(GameSprite):
+    direction = 'down'
     def update(self):
-        if sprite.collide_rect(s_menemy, wallw3):
-            self.direction = 'right'
-        if sprite.collide_rect(s_menemy, l1wall1):
-            self.direction = 'left'
+        if (sprite.collide_rect(s_l1menemy1, wallw1) or sprite.collide_rect(s_l2menemy1, wallw1) or sprite.collide_rect(s_l2menemy1, l2wall2)):
+            self.direction = 'down'
+        if sprite.collide_rect(s_l1menemy1, wallw2):
+            self.direction = 'up'
         
-        if self.direction == 'left':
-            self.rect.x -= self.speed
-        if self.direction == 'right':
-            self.rect.x += self.speed
+        if self.direction == 'up':
+            self.rect.y -= self.speed
+        if self.direction == 'down':
+            self.rect.y += self.speed
 
 
 
@@ -75,6 +75,7 @@ class Bullet(GameSprite):
     def update(self):
         self.rect.x -= self.speed
         sprite.groupcollide(bullets, walls, True, False)
+        
 
         if self.rect.x < -2:
             self.kill()
@@ -132,7 +133,10 @@ background3 = transform.scale(image.load('loc1.png'), (1000, 700))
 #спрайты
 s_hero = PLayer('player.png', 100, 100, 800, 300, 7)
 
-s_menemy = MeleeEnemy_lr('enemy2.png', 100, 100, 50, 100, 4)
+s_l1menemy1 = MeleeEnemy('enemy2.png', 100, 100, 500, 100, 4)
+s_l1menemy2 = MeleeEnemy('enemy2.png', 100, 100, 100, 300, 0)
+
+s_l2menemy1 = MeleeEnemy('enemy2.png', 100, 100, 100, 700, 4)
 
 bullets = sprite.Group()
 
@@ -175,7 +179,7 @@ l3w2_y = 10000
 #0 250
 #500 400
 l3wall1 = Wall(0, 255, 0, l3w1_x, l3w1_y, 5, 300)
-l3wall2 = Wall(60, 60, 60, l3w2_x, l3w2_y, 10, 500)
+l3wall2 = Wall(60, 60, 60, l3w2_x, l3w2_y, 20, 500)
 
 
 
@@ -202,6 +206,7 @@ clock = time.Clock()
 FPS = 50
 
 walls = sprite.Group(wallw1, wallw2, wallw3, wallw3_2, wallw4, l1wall1, l1wall2, l2wall1, l2wall2, l3wall1, l3wall2)
+menemy = sprite.Group(s_l1menemy1, s_l1menemy2, s_l2menemy1)
 walls.add()
 
 font.init()
@@ -216,6 +221,10 @@ while game:
         wallw1.draw_wall()
         wallw2.draw_wall()
         wallw4.draw_wall()
+        sprite.groupcollide(bullets, menemy, True, True)
+
+        
+        
 
 
         #команты
@@ -224,6 +233,11 @@ while game:
 
             l1wall1.draw_wall()
             l1wall2.draw_wall()
+
+            
+
+            s_l2menemy1.rect.x = 10000
+
 
 
         if s_hero.rect.x < -100:
@@ -250,6 +264,12 @@ while game:
             l2wall1.draw_wall()
             l2wall2.draw_wall()
 
+            s_l1menemy1.kill()
+            s_l1menemy2.kill()
+
+            s_l2menemy1.rect.y = 100
+            s_l2menemy1.rect.x = 500
+
         if room == 2:
             window.blit(background3, (0, 0))
             l2wall1.rect.x = 10000
@@ -273,9 +293,6 @@ while game:
         s_hero.update()
         s_hero.reset()
 
-        s_menemy.update()
-        s_menemy.reset()
-
 
         wallw3.draw_wall()
         wallw3_2.draw_wall()
@@ -288,7 +305,8 @@ while game:
 
 
 
-
+        menemy.update()
+        menemy.draw(window)
 
         bullets.update()
         bullets.draw(window)
