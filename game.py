@@ -49,11 +49,11 @@ class PLayer(GameSprite):
         bullet = Bullet('bullet.png', 20, 15, self.rect.centerx, self.rect.centery, 10)
         bullets.add(bullet)
 
-    def enemyfire():
+    
 
 
 
-        pass
+        
 
 class MeleeEnemy(GameSprite):
     direction = 'down'
@@ -68,6 +68,14 @@ class MeleeEnemy(GameSprite):
         if self.direction == 'down':
             self.rect.y += self.speed
 
+class ShootEnemy(GameSprite):
+    #def update(self):
+
+
+    def enemyfire(self):
+        enemybullet = EnemyBullet('enemybullet.png',20, 15, self.rect.centerx, self.rect.centery, 7)
+        ebullets.add(enemybullet)
+
 
 
 
@@ -79,6 +87,14 @@ class Bullet(GameSprite):
 
         if self.rect.x < -2:
             self.kill()
+
+class EnemyBullet(GameSprite):
+    def update(self):
+        self.rect.x += self.speed
+        sprite.groupcollide(ebullets, walls, True, False)
+        sprite.spritecollide(s_hero, ebullets, True)
+
+
 class Wall(sprite.Sprite):
     def __init__(self, r, g, b, x, y, w, h):
         super().__init__()
@@ -138,7 +154,11 @@ s_l1menemy2 = MeleeEnemy('enemy2.png', 100, 100, 100, 300, 0)
 
 s_l2menemy1 = MeleeEnemy('enemy2.png', 100, 100, 100, 700, 4)
 
+shoot_enemy1 = ShootEnemy('enemy1.png', 100, 100, 100, 500, 0)
+
+'''пули'''
 bullets = sprite.Group()
+ebullets = sprite.Group()
 
 
 
@@ -191,9 +211,6 @@ l3wall2 = Wall(60, 60, 60, l3w2_x, l3w2_y, 20, 500)
 
 
 
-
-
-
 mixer.init()
 
 
@@ -206,7 +223,9 @@ clock = time.Clock()
 FPS = 50
 
 walls = sprite.Group(wallw1, wallw2, wallw3, wallw3_2, wallw4, l1wall1, l1wall2, l2wall1, l2wall2, l3wall1, l3wall2)
-menemy = sprite.Group(s_l1menemy1, s_l1menemy2, s_l2menemy1)
+menemy = sprite.Group(s_l1menemy1, s_l1menemy2, s_l2menemy1, shoot_enemy1)
+hero = sprite.Group(s_hero)
+
 walls.add()
 
 font.init()
@@ -298,13 +317,6 @@ while game:
         wallw3_2.draw_wall()
 
 
-
-
-
-
-
-
-
         menemy.update()
         menemy.draw(window)
 
@@ -312,8 +324,11 @@ while game:
         bullets.draw(window)
 
 
+        if shoot_enemy1.rect.y - 100 <= s_hero.rect.y <= shoot_enemy1.rect.y + 100:
+            shoot_enemy1.enemyfire()
 
-
+        ebullets.update()
+        ebullets.draw(window)
 
 
 
@@ -323,23 +338,7 @@ while game:
         if e.type == MOUSEBUTTONDOWN:
             if e.button == 1:
                 s_hero.fire()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        
 
 
     display.update()
