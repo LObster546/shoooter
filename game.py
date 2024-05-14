@@ -2,6 +2,7 @@
 from typing import Any
 from pygame import*
 from random import *
+
 import math  
 #Игра
 # шутер цель которого добраться до конца отстреливаясь от врагов и решая иногда 
@@ -10,7 +11,8 @@ import math
 #Управление: w a s d - хотьба,  ЛКМ - стрельба
 #У игрока только 1 жизнь, по пути будут встречаться: двигующиеся враги, стреляющие, стоящие(наверное)
 room = 0
-
+boss_h = 3
+shoot_h = 1
 
 class GameSprite(sprite.Sprite):
     def __init__(self, player_image, player_w, player_h, player_x, player_y, player_speed):
@@ -68,12 +70,37 @@ class MeleeEnemy(GameSprite):
         if self.direction == 'down':
             self.rect.y += self.speed
 
+
+
+class BossEnemy(GameSprite):
+    direction_B = 'down'
+    def update(self):
+        if sprite.collide_rect(s_boss, wallw1):
+            self.direction_B = 'down'
+        if sprite.collide_rect(s_boss, wallw2):
+            self.direction_B = 'up'
+        
+        if self.direction_B == 'up':
+            self.rect.y -= self.speed
+        if self.direction_B == 'down':
+            self.rect.y += self.speed
+
+
+    def bossfire(self):
+        enemybullet = EnemyBullet('enemybullet.png',20, 15, self.rect.centerx, self.rect.centery, 7)
+        
+        ebullets.add(enemybullet)
+        
+
+
+
 class ShootEnemy(GameSprite):
     #def update(self):
 
 
     def enemyfire(self):
         enemybullet = EnemyBullet('enemybullet.png',20, 15, self.rect.centerx, self.rect.centery, 7)
+        
         ebullets.add(enemybullet)
 
 
@@ -154,8 +181,9 @@ s_l1menemy2 = MeleeEnemy('enemy2.png', 100, 100, 100, 300, 0)
 
 s_l2menemy1 = MeleeEnemy('enemy2.png', 100, 100, 100, 700, 4)
 
-shoot_enemy1 = ShootEnemy('enemy1.png', 100, 100, 100, 500, 0)
+s_l2shoot_enemy1 = ShootEnemy('enemy1.png', 150, 100, 10, 10, 0)
 
+s_boss = BossEnemy('boss.png', 200, 150, 200, 300, 3)
 '''пули'''
 bullets = sprite.Group()
 ebullets = sprite.Group()
@@ -223,15 +251,17 @@ clock = time.Clock()
 FPS = 50
 
 walls = sprite.Group(wallw1, wallw2, wallw3, wallw3_2, wallw4, l1wall1, l1wall2, l2wall1, l2wall2, l3wall1, l3wall2)
-menemy = sprite.Group(s_l1menemy1, s_l1menemy2, s_l2menemy1, shoot_enemy1)
+menemy = sprite.Group(s_l1menemy1, s_l1menemy2, s_l2menemy1)
+senemy = sprite.Group(s_l2shoot_enemy1)
 hero = sprite.Group(s_hero)
+bosses = sprite.Group(s_boss)
 
 walls.add()
 
 font.init()
 font = font.Font(None, 70)
 win = font.render('Победа', True, (255, 0, 0))
-lose = font.render('Проигрыш ', True, (255, 0, 0))
+lose = font.render('Ты умер ', True, (255, 0, 0))
 
 finish = False
 game = True
@@ -241,6 +271,10 @@ while game:
         wallw2.draw_wall()
         wallw4.draw_wall()
         sprite.groupcollide(bullets, menemy, True, True)
+
+        if sprite.groupcollide(bullets, senemy, True, True):
+            shoot_h += 1
+            
 
         
         
@@ -256,6 +290,8 @@ while game:
             
 
             s_l2menemy1.rect.x = 10000
+            
+            s_l2shoot_enemy1.rect.x = 10000
 
 
 
@@ -272,6 +308,8 @@ while game:
             l1wall2.rect.y = 10000
 
 
+            s_l2shoot_enemy1.rect.x = 200
+            s_l2shoot_enemy1.rect.y = 150
 
             l2wall1.rect.x = 800
             l2wall1.rect.y = 300
@@ -296,6 +334,13 @@ while game:
             l2wall2.rect.x = 10000
             l2wall2.rect.y = 10000
 
+            s_l2menemy1.kill()
+            s_l2shoot_enemy1.kill()
+            shoot_h = 2
+
+            bosses.update()
+            bosses.draw(window)
+            
             l3wall1.rect.x = 0
             l3wall1.rect.y = 250
 
@@ -304,6 +349,8 @@ while game:
 
             l3wall1.draw_wall()
             l3wall2.draw_wall()
+            s_l1menemy1.kill()
+            s_l1menemy2.kill()
 
 
         
@@ -316,19 +363,33 @@ while game:
         wallw3.draw_wall()
         wallw3_2.draw_wall()
 
+        senemy.update()
+        senemy.draw(window)
 
         menemy.update()
         menemy.draw(window)
 
+
         bullets.update()
         bullets.draw(window)
 
-
-        if shoot_enemy1.rect.y - 100 <= s_hero.rect.y <= shoot_enemy1.rect.y + 100:
-            shoot_enemy1.enemyfire()
+        if not shoot_h > 1 :
+            if s_l2shoot_enemy1.rect.y - 100 <= s_hero.rect.y <= s_l2shoot_enemy1.rect.y + 100:
+                s_l2shoot_enemy1.enemyfire()
 
         ebullets.update()
         ebullets.draw(window)
+
+        if boss_h > 0 and room == 2:
+            if s_boss.rect.y - 100 <= s_hero.rect.y <= s_boss.rect.y + 100:
+                s_boss.bossfire()
+
+        ebullets.update()
+        ebullets.draw(window)  
+
+        if (sprite.groupcollide(hero, ebullets, True, True) or sprite.groupcollide(hero, menemy, True, False) or sprite.groupcollide(hero, bosses, True, False)):
+            finish = True
+            window.blit(lose, (300, 300))
 
 
 
