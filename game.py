@@ -31,7 +31,7 @@ class PLayer(GameSprite):
         
 
         if keys_pressed[K_a]:
-            if not (sprite.collide_rect(s_hero, wallw3) or sprite.collide_rect(s_hero, wallw3_2) or sprite.collide_rect(s_hero, l1wall1) or sprite.collide_rect(s_hero, l1wall2) or sprite.collide_rect(s_hero, l2wall1) or sprite.collide_rect(s_hero, l3wall1) or sprite.collide_rect(s_hero, l3wall2) or sprite.collide_rect(s_hero, l2wall2)):
+            if not (sprite.collide_rect(s_hero, wallw3) or sprite.collide_rect(s_hero, wallw3_2) or sprite.collide_rect(s_hero, l1wall1) or sprite.collide_rect(s_hero, l1wall2) or sprite.collide_rect(s_hero, l2wall1) or sprite.collide_rect(s_hero, l3wall1) or sprite.collide_rect(s_hero, l3wall2) or sprite.collide_rect(s_hero, l2wall2) or sprite.collide_rect(s_hero, l2_door)):
                 self.rect.x -= self.speed
         if keys_pressed[K_d]:
             if not (sprite.collide_rect(s_hero, wallw4) or sprite.collide_rect(s_hero, l1wall1) or sprite.collide_rect(s_hero, l1wall2) or sprite.collide_rect(s_hero, l2wall1) or sprite.collide_rect(s_hero, l3wall2)) :
@@ -180,6 +180,8 @@ s_l1menemy2 = MeleeEnemy('enemy2.png', 100, 100, 100, 300, 0)
 
 s_l2menemy1 = MeleeEnemy('enemy2.png', 100, 100, 100, 700, 4)
 
+s_l2menemy2 = MeleeEnemy('enemy2.png', 100, 100, 100, 50, 4)
+
 s_l2shoot_enemy1 = ShootEnemy('enemy1.png', 150, 100, 10, 10, 0)
 
 s_boss = BossEnemy('boss.png', 200, 150, 200, 300, 3)
@@ -234,25 +236,38 @@ l2_bd = GameSprite('button0.png', 100, 100, 5, 50, 0)
 
 
 #двери
+l2_door = Wall(255, 0, 0, 10000, 250, 10, 300)
 
+hp_bar = GameSprite('BossHP5.png', 400, 50, 300, 10, 0)
 
+'''БОЧКИ'''
+#1 лока
+l1_bar1 = GameSprite('barell1.png', 60, 65, 10, 40, 0) 
+l1_bar2 = GameSprite('barell3.png', 120, 120, 140, 10, 0)
+l1_bar3 = GameSprite('barell1.png', 60, 65, 10, 600, 0)
 
-
+#2 лока
+l2_bar1 = GameSprite('barell1.png', 60, 65, 10, 200, 0)
+l2_bar2 = GameSprite('barell3.png', 120, 120, 10, 550, 0)
+#3 лока
+l3_bar1 = GameSprite('barell2.png', 100, 90, 10, 600, 0)
+l3_bar2 = GameSprite('barell3.png', 120, 120, 520, 550, 0)
 
 mixer.init()
 
 
 
 
-
+b = 0
 
 
 clock = time.Clock()
 FPS = 50
 
+button = sprite.Group(l2_bd)
 endwall = sprite.Group(l3wall1)
 walls = sprite.Group(wallw1, wallw2, wallw3, wallw3_2, wallw4, l1wall1, l1wall2, l2wall1, l2wall2, l3wall2)
-menemy = sprite.Group(s_l1menemy1, s_l1menemy2, s_l2menemy1)
+menemy = sprite.Group(s_l1menemy1, s_l1menemy2, s_l2menemy1, s_l2menemy2)
 senemy = sprite.Group(s_l2shoot_enemy1)
 hero = sprite.Group(s_hero)
 bosses = sprite.Group(s_boss)
@@ -285,6 +300,8 @@ while game:
 
         if sprite.groupcollide(bullets, senemy, True, True):
             shoot_h += 1
+
+        
             
 
         #команты
@@ -294,8 +311,17 @@ while game:
             l1wall1.draw_wall()
             l1wall2.draw_wall()
 
-            
+            l1_bar1.update()
+            l1_bar1.reset()
 
+            l1_bar2.update()
+            l1_bar2.reset()
+
+            l1_bar3.update()
+            l1_bar3.reset()
+
+            
+            s_l2menemy2.rect.x = 10000
             s_l2menemy1.rect.x = 10000
             
             s_l2shoot_enemy1.rect.x = 10000
@@ -318,6 +344,11 @@ while game:
             s_l2shoot_enemy1.rect.x = 200
             s_l2shoot_enemy1.rect.y = 150
 
+            s_l2menemy2.rect.x = 50
+            s_l2menemy2.rect.y = 300
+
+
+
             l2wall1.rect.x = 800
             l2wall1.rect.y = 300
 
@@ -325,11 +356,28 @@ while game:
             l2wall2.rect.y = 270
             window.blit(background2, (0, 0))
 
+            l2_door.draw_wall()
+            if b == 0:
+                l2_door.rect.x = 1
+
             l2wall1.draw_wall()
             l2wall2.draw_wall()
 
+            l2_bd.update()
+            l2_bd.reset()
+
+            l2_bar1.update()
+            l2_bar1.reset()
+
+            l2_bar2.update()
+            l2_bar2.reset()
+
+            
+
             s_l1menemy1.kill()
             s_l1menemy2.kill()
+
+
 
             s_l2menemy1.rect.y = 100
             s_l2menemy1.rect.x = 500
@@ -349,7 +397,21 @@ while game:
 
             s_l2menemy1.kill()
             s_l2shoot_enemy1.kill()
+            s_l2menemy2.kill()
+
             shoot_h = 2
+
+            l3_bar1.update()
+            l3_bar1.reset()
+
+            l3_bar2.update()
+            l3_bar2.reset()
+
+            hp_bar.update()
+            hp_bar.reset()
+
+            l1_bar1.update()
+            l1_bar1.reset()
 
             bosses.update()
             bosses.draw(window)
@@ -372,8 +434,8 @@ while game:
         s_hero.update()
         s_hero.reset()
 
-        l2_bd.update()
-        l2_bd.reset()
+
+        
 
 
         wallw3.draw_wall()
@@ -388,6 +450,19 @@ while game:
 
         bullets.update()
         bullets.draw(window)
+        if boss_h == 4:
+            hp_bar = GameSprite('BossHP4.png', 400, 50, 300, 10, 0)
+        if boss_h == 3:
+            hp_bar = GameSprite('BossHP3.png', 400, 50, 300, 10, 0)
+        if boss_h == 2:
+            hp_bar = GameSprite('BossHP2.png', 400, 50, 300, 10, 0)
+        if boss_h == 1:
+            hp_bar = GameSprite('BossHP1.png', 400, 50, 300, 10, 0)
+        if boss_h == 0:
+            hp_bar = GameSprite('BossHP0.png', 400, 50, 300, 10, 0)
+
+
+
 
         if not shoot_h > 1 :
             if s_l2shoot_enemy1.rect.y - 100 <= s_hero.rect.y <= s_l2shoot_enemy1.rect.y + 100:
@@ -409,12 +484,20 @@ while game:
         enbullets.update()
         enbullets.draw(window)  
 
+        if sprite.groupcollide(hero, button, False, False):
+            l2_bd = GameSprite('button1.png', 100, 100, 5, 50, 0)
+            l2_door.kill()
+            l2_door.rect.x = 10000
+            b += 1
+
         if sprite.groupcollide(enbullets, hero, True, True) or sprite.groupcollide(hero, menemy, True, False):
             finish = True
             window.blit(lose, (300, 300))
-        if sprite.groupcollide(hero, endwall , False, False):
-            finish = True
-            window.blit(win, (300, 300))
+
+        if boss_h == 0:
+            if sprite.groupcollide(hero, endwall , False, False):
+                finish = True
+                window.blit(win, (300, 300))
 
 
 
